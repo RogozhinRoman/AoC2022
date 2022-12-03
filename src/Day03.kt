@@ -15,37 +15,13 @@ fun main() {
     }
 
     fun part2(input: List<String>): Int {
-        val firstLevelCommon = mutableSetOf<Char>()
-        val secondLevelCommon = mutableSetOf<Char>()
-        var resultPriority = 0
-        var index = 0
-
-        for (line in input) {
-            if (index == 0) {
-                firstLevelCommon.addAll(line.toList())
-                index++
-            } else if (index == 1) {
-                for (c in line) {
-                    if (firstLevelCommon.contains(c)) {
-                        secondLevelCommon.add(c)
-                    }
-                }
-                index++
-            } else {
-                for (c in line) {
-                    if (secondLevelCommon.contains(c)) {
-                        resultPriority += getPriority(c)
-                        break
-                    }
-                }
-
-                firstLevelCommon.clear()
-                secondLevelCommon.clear()
-                index = 0
-            }
+        return input.chunked(3).sumOf {it ->
+            it[0].toSet()
+                .intersect(it[1].toSet())
+                .intersect(it[2].toSet())
+                .map { getPriority(it) }
+                .single()
         }
-
-        return resultPriority
     }
 
     // test if implementation meets criteria from the description, like:
