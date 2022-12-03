@@ -5,27 +5,13 @@ fun main() {
     }
 
     fun part1(input: List<String>): Int {
-        val firstPartLetters = mutableSetOf<Char>()
-        var priority = 0
-
-        for (line in input) {
-            val half = line.length / 2
-
-            for (i in 0 until half) {
-                firstPartLetters.add(line[i])
-            }
-
-            for (i in half until line.length) {
-                if (firstPartLetters.contains(line[i])) {
-                    priority += getPriority(line[i])
-                    break
-                }
-            }
-
-            firstPartLetters.clear()
+        return input.sumOf { it ->
+            it.subSequence(0 until it.length / 2)
+                .toSet()
+                .intersect(it.subSequence(it.length / 2, it.length).toSet())
+                .map { getPriority(it) }
+                .single()
         }
-
-        return priority
     }
 
     fun part2(input: List<String>): Int {
