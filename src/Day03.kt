@@ -15,7 +15,7 @@ fun main() {
     }
 
     fun part2(input: List<String>): Int {
-        return input.chunked(3).sumOf {it ->
+        return input.chunked(3).sumOf { it ->
             it[0].toSet()
                 .intersect(it[1].toSet())
                 .intersect(it[2].toSet())
