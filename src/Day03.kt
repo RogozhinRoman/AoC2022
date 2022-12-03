@@ -4,24 +4,20 @@ fun main() {
         else c.code - 'A'.code + 27
     }
 
-    fun part1(input: List<String>): Int {
-        return input.sumOf { it ->
-            it.subSequence(0 until it.length / 2)
-                .toSet()
-                .intersect(it.subSequence(it.length / 2, it.length).toSet())
-                .map { getPriority(it) }
-                .single()
-        }
+    fun part1(input: List<String>) = input.sumOf { it ->
+        it.subSequence(0 until it.length / 2)
+            .toSet()
+            .intersect(it.subSequence(it.length / 2, it.length).toSet())
+            .map { getPriority(it) }
+            .single()
     }
 
-    fun part2(input: List<String>): Int {
-        return input.chunked(3).sumOf { it ->
-            it[0].toSet()
-                .intersect(it[1].toSet())
-                .intersect(it[2].toSet())
-                .map { getPriority(it) }
-                .single()
-        }
+    fun part2(input: List<String>) = input.chunked(3).sumOf { it ->
+        it[0].toSet()
+            .intersect(it[1].toSet())
+            .intersect(it[2].toSet())
+            .map { getPriority(it) }
+            .single()
     }
 
     // test if implementation meets criteria from the description, like:
