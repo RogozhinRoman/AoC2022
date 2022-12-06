@@ -1,16 +1,16 @@
 fun main() {
     fun getChunkStart(input: String, limit: Int): Int {
         val buffer = ArrayDeque<Char>()
-        for (fast in input.indices) {
-            if (fast != 0 && buffer.contains(input[fast])) {
+        for (i in input.indices) {
+            if (i != 0 && buffer.contains(input[i])) {
                 do {
                     val first = buffer.removeFirst()
-                } while (first != input[fast])
+                } while (first != input[i])
             }
 
-            buffer.addLast(input[fast])
+            buffer.addLast(input[i])
             if (buffer.size == limit) {
-                return fast + 1
+                return i + 1
             }
         }
 
