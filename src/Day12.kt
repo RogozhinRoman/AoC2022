@@ -1,13 +1,13 @@
 fun main() {
-    fun getNeighbours(currentI: Int, currentJ: Int, limitI: Int, limitJ: Int): MutableSet<Pair<Int, Int>> {
+    fun getNeighbours(currentNode: Pair<Int, Int>, grid: Array<CharArray>): MutableSet<Pair<Int, Int>> {
         val cord = arrayOf(0, 1, 0, -1, 0)
         val neighbours = mutableSetOf<Pair<Int, Int>>()
 
         for (i in 0 until cord.lastIndex) {
-            val newX = currentI + cord[i]
-            val newY = currentJ + cord[i + 1]
+            val newX = currentNode.first + cord[i]
+            val newY = currentNode.second + cord[i + 1]
 
-            if (newX < 0 || newX >= limitI || newY < 0 || newY >= limitJ) continue
+            if (newX < 0 || newX >= grid.size || newY < 0 || newY >= grid.first().size) continue
 
             neighbours.add(Pair(newX, newY))
         }
@@ -15,25 +15,34 @@ fun main() {
         return neighbours
     }
 
-    fun getMinSteps(grid: Array<CharArray>, visited: Set<Pair<Int, Int>>, currentI: Int, currentJ: Int): Int {
-        if (grid[currentI][currentJ] == 'E') {
-            return visited.size
+    class Path(val currentCoordinate: Pair<Int, Int>, val steps: Int)
+
+    fun getStepsNumber(startNode: Pair<Int, Int>, grid: Array<CharArray>): Int {
+        val visited = mutableSetOf<Pair<Int, Int>>()
+        val queue = ArrayDeque<Path>()
+        queue.addLast(Path(startNode, 1))
+
+        while (queue.isNotEmpty()) {
+            val currentNode = queue.removeFirst()
+
+            val currentCoordinates = currentNode.currentCoordinate
+            for (neighbour in getNeighbours(currentCoordinates, grid)) {
+                if (visited.contains(currentCoordinates)) continue
+
+                val currentItem = grid[currentCoordinates.first][currentCoordinates.second]
+                if (currentItem.code + 1 < grid[neighbour.first][neighbour.second].code ||
+                    (grid[neighbour.first][neighbour.second] == 'E' && currentItem.code < 'y'.code)
+                ) continue
+
+                if (grid[neighbour.first][neighbour.second] == 'E') return currentNode.steps
+
+                queue.addLast(Path(neighbour, currentNode.steps + 1))
+            }
+
+            visited.add(currentCoordinates)
         }
 
-        var min = Int.MAX_VALUE
-        for (neighbour in getNeighbours(currentI, currentJ, grid.size, grid.first().size)) {
-            if (visited.contains(neighbour)) continue
-            if (grid[currentI][currentJ].code + 1 < grid[neighbour.first][neighbour.second].code ||
-                (grid[neighbour.first][neighbour.second] == 'E' && grid[currentI][currentJ].code < 'y'.code)
-            ) continue
-
-            val newVisited = visited.toMutableSet()
-            newVisited.add(neighbour)
-            val minSteps = getMinSteps(grid, newVisited, neighbour.first, neighbour.second)
-            min = kotlin.math.min(min, minSteps)
-        }
-
-        return min
+        return 0
     }
 
     fun part1(input: List<String>): Int {
@@ -53,18 +62,33 @@ fun main() {
             }
         }
 
-        return getMinSteps(grid, setOf(Pair(startI, startJ)), startI, startJ) - 1
+        return getStepsNumber(Pair(startI, startJ), grid)
     }
 
-    // fun part2(input: List<String>) =
+    fun part2(input: List<String>): Int {
+        val grid = Array(input.size) { CharArray(input.first().length) }
+
+        val startNodes = mutableListOf<Pair<Int, Int>>()
+        for ((i, line) in input.withIndex()) {
+            for ((j, symb) in line.withIndex()) {
+                if (symb == 'S') {
+                    grid[i][j] = 'a'
+                    startNodes.add(Pair(i, j))
+                    continue
+                }
+                grid[i][j] = symb
+                if (symb == 'a') startNodes.add(Pair(i, j))
+            }
+        }
+
+        return startNodes.map { getStepsNumber(it, grid) }.filter { it != 0 }.min()
+    }
 
     val testInput = readInput("Day12_test")
-    val part1 = part1(testInput)
-    println(part1)
-    check(part1 == 31)
-//    check(part2(testInput) == 70)
-//
+    check(part1(testInput) == 31)
+    check(part2(testInput) == 29)
+
     val input = readInput("Day12")
     println(part1(input))
-//    println(part2(input))
+    println(part2(input))
 }
