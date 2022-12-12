@@ -42,7 +42,7 @@ fun main() {
             visited.add(currentCoordinates)
         }
 
-        return 0
+        return Int.MAX_VALUE
     }
 
     fun part1(input: List<String>): Int {
@@ -81,7 +81,7 @@ fun main() {
             }
         }
 
-        return startNodes.map { getStepsNumber(it, grid) }.filter { it != 0 }.min()
+        return startNodes.minOf { getStepsNumber(it, grid) }
     }
 
     val testInput = readInput("Day12_test")
